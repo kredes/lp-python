@@ -89,7 +89,7 @@ class InterestPoint(object):
         self.long_description = remove_p(long_description)
         self.short_description = remove_p(short_description)
         self.address = address
-        self.location = '{};{};{}'.format(address, district, barri)
+        self.location = '{}. {}, {}.'.format(address, barri, district)
         self.longitude = longitude
         self.latitude = latitude
         self.near_slots_stations = []   # List of tuples (station, distance to this point)
@@ -256,7 +256,7 @@ def build_html(points):
     table = ET.Element('table', {'border': 'true'})
 
     header = ET.Element('tr')
-    for field in ('name', 'description', 'address', 'Nearest stations with free slots', 'Nearest stations with available bikes'):
+    for field in ('name', 'description', 'location', 'Nearest stations with free slots', 'Nearest stations with available bikes'):
         header.append(elem_with_text('th', field))
     table.append(header)
 
@@ -267,7 +267,7 @@ def build_html(points):
         row = ET.Element('tr')
         row.append(elem_with_text('td', point.name))
         row.append(elem_with_text('td', description))
-        row.append(elem_with_text('td', point.address))
+        row.append(elem_with_text('td', point.location))
 
         slots = ET.Element('td')
         for s, dist in point.near_slots_stations[:5]:
