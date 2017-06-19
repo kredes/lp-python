@@ -44,20 +44,6 @@ def get_text(xml_elem):
     return '' if xml_elem is None else ''.join(xml_elem.itertext())
 
 
-def print_point(point, long_description=False):
-    description = point.long_description if long_description else point.short_description
-    print('Name: ', point.name)
-    print('Address: ', point.address)
-    print('Description: ', description)
-    print('Nearest stations with free slots: ')
-    for station, distance in point.near_slots_stations:
-        print('\t{} -- {} slots ({} meters)'.format(station.address, station.slots, distance, station.slots))
-    print('Nearest stations with available bikes: ')
-    for station, distance in point.near_bikes_stations:
-        print('\t{} -- {} bikes ({} meters)'.format(station.address, station.bikes, distance))
-    print('------------------------------------------------\n')
-
-
 def remove_p(s):
     res = s
     if res.startswith('<p>'):
@@ -270,7 +256,6 @@ def build_html(points):
 
         slots = ET.Element('td')
         for s, dist in point.near_slots_stations[:5]:
-            #slots.append(elem_with_text('p', '&amp;'.encode('utf-8').decode('utf-8')))
             slots.append(elem_with_text('p', '{} ({} free slots, ~{} meters away)'.format(s.address, s.slots, int(dist))))
 
         bikes = ET.Element('td')
@@ -290,18 +275,8 @@ def build_html(points):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    query = None
-    try:
-        a = args.key
+    query = ast.literal_eval(args.key)
 
-        query = ast.literal_eval(args.key)
+    evaluator = Evaluator(args.lan)
 
-        evaluator = Evaluator(args.lan)
-
-        # print_result(evaluator.evaluate(query))
-
-        print(build_html(evaluator.evaluate(query)))
-
-    except Exception as e:
-        print('Error: Invalid value for argument --key. Message:')
-        print('\t{}'.format(e))
+    print(build_html(evaluator.evaluate(query)))
