@@ -184,32 +184,32 @@ class Evaluator(object):
             point.sort_stations()
 
     # Generic
-    def evaluate(self, query):
+    def evaluate(self, query, field=None):
         if isinstance(query, list):
-            return self.evaluate_list(query)
+            return self.evaluate_list(query, field)
         elif isinstance(query, tuple):
-            return self.evaluate_tuple(query)
+            return self.evaluate_tuple(query, field)
         elif isinstance(query, dict):
-            return self.evaluate_dict(query)
+            return self.evaluate_dict(query, field)
         elif isinstance(query, str):
-            return self.evaluate_string(query)
+            return self.evaluate_string(query, field)
         else:
             return False
 
     # Disjunctions
-    def evaluate_list(self, query):
+    def evaluate_list(self, query, field=None):
         result = []
         for q in query:
-            tmp = self.evaluate(q)
+            tmp = self.evaluate(q, field)
             result.extend(tmp)
 
         return result
 
     # Conjunctions
-    def evaluate_tuple(self, query):
+    def evaluate_tuple(self, query, field=None):
         result = []
         for q in query:
-            tmp = self.evaluate(q)
+            tmp = self.evaluate(q, field)
             if not tmp:
                 return []
             result.extend(tmp)
@@ -217,10 +217,10 @@ class Evaluator(object):
         return result
 
     # More conjunctions
-    def evaluate_dict(self, query):
+    def evaluate_dict(self, query, field=None):
         result = []
         for field, q in query.items():
-            tmp = self.evaluate_string(q, field)
+            tmp = self.evaluate(q, field)
             if not tmp:
                 return []
             result.extend(tmp)
@@ -293,14 +293,16 @@ if __name__ == "__main__":
 
     query = None
     try:
+        a = args.key
+
         query = ast.literal_eval(args.key)
+
+        evaluator = Evaluator(args.lan)
+
+        # print_result(evaluator.evaluate(query))
+
+        print(build_html(evaluator.evaluate(query)))
+
     except Exception as e:
         print('Error: Invalid value for argument --key. Message:')
         print('\t{}'.format(e))
-
-    evaluator = Evaluator(args.lan)
-
-    #print_result(evaluator.evaluate(query))
-
-    print(build_html(evaluator.evaluate(query)))
-
