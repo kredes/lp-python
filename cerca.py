@@ -103,7 +103,7 @@ class InterestPoint(object):
         elif field == 'location':
             field_value = self.location
         else:
-            return None
+            field_value = ''
 
         return re.search(query, remove_accents(field_value), re.IGNORECASE)
 
@@ -196,7 +196,6 @@ class Evaluator(object):
         else:
             return False
 
-    # Disjunctions
     def evaluate_list(self, query, field=None):
         result = []
         for q in query:
@@ -205,27 +204,27 @@ class Evaluator(object):
 
         return result
 
-    # Conjunctions
     def evaluate_tuple(self, query, field=None):
-        result = []
+        aux = []
         for q in query:
-            tmp = self.evaluate(q, field)
-            if not tmp:
-                return []
-            result.extend(tmp)
+            aux.append(self.evaluate(q, field))
 
-        return result
+        result = set(aux[0])
+        for res in aux:
+            result = result.intersection(res)
 
-    # More conjunctions
+        return list(result)
+
     def evaluate_dict(self, query, field=None):
-        result = []
+        aux = []
         for field, q in query.items():
-            tmp = self.evaluate(q, field)
-            if not tmp:
-                return []
-            result.extend(tmp)
+            aux.append(self.evaluate(q, field))
 
-        return result
+        result = set(aux[0])
+        for res in aux:
+            result = result.intersection(res)
+
+        return list(result)
 
     def evaluate_string(self, query, field=None):
         if field is None:
