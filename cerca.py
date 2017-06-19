@@ -276,7 +276,7 @@ def build_html(points):
 
         bikes = ET.Element('td')
         for s, dist in point.near_bikes_stations[:5]:
-            bikes.append(elem_with_text('p', '{} ({} free bikes, ~{} meters away)'.format(s.address, s.bikes, int(dist))))
+            bikes.append(elem_with_text('p', '{} ({} available bikes, ~{} meters away)'.format(s.address, s.bikes, int(dist))))
 
         row.append(slots)
         row.append(bikes)
